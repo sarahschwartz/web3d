@@ -27,10 +27,9 @@ export default function CreateEvent() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    let formData = {
-      text: eventName,
-      file
-    }
+    let formData = new FormData()
+    formData.append('file', file)
+    formData.append('text', eventName)
 
     try {
       const response = await fetch("/api/upload", {
