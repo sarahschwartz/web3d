@@ -72,16 +72,6 @@ export default function UploadForm() {
                 required
                 onChange={(e) => {setFile(e.target.files[0])}}
             />
-              {/* <input
-                id="file"
-                name="file"
-                type="file"
-                className={styles.formInput}
-                required
-                value={file}
-                // onChange={(e) => setFile(e.target.files)}
-                
-              /> */}
             </div>
           </div>
 
