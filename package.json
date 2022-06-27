@@ -11,6 +11,7 @@
   "dependencies": {
     "@apollo/client": "^3.6.9",
     "@rainbow-me/rainbowkit": "^0.3.4",
+    "@react-three/fiber": "^8.0.27",
     "ethers": "^5.6.9",
     "graphql": "^16.5.0",
     "lit-js-sdk": "^1.1.192",
@@ -19,6 +20,7 @@
     "next-connect": "^0.12.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "three": "^0.141.0",
     "wagmi": "^0.4.12",
     "web3.storage": "^4.3.0"
   },
