@@ -6,12 +6,28 @@ export default function UploadForm() {
   const [projectName, setProjectName] = useState("");
   const [file, setFile] = useState(null);
 
+  // this is where we set the conditions that allow users to access a file
+  // this example checks if the user's wallet address is a specific address
+  const accessControlConditions = [
+    {
+      contractAddress: "",
+      standardContractType: "",
+      chain,
+      method: "",
+      parameters: [":userAddress"],
+      returnValueTest: {
+        comparator: "=",
+        value: "0xFAc3414518A0A0A5c955151b077c9222a41786Ff",
+      },
+    },
+  ];
+
   async function handleSubmit(e) {
     e.preventDefault();
 
-    let formData = new FormData()
-    formData.append('file', file)
-    formData.append('text', projectName)
+    let formData = new FormData();
+    formData.append("file", file);
+    formData.append("text", projectName);
 
     try {
       const response = await fetch("/api/upload", {
@@ -19,7 +35,7 @@ export default function UploadForm() {
         body: formData,
       });
       if (response.status !== 200) {
-        console.log("ERROR", response)
+        console.log("ERROR", response);
       } else {
         console.log("Form successfully submitted!");
         let responseJSON = await response.json();
@@ -36,10 +52,7 @@ export default function UploadForm() {
     <div className="">
       <Head>
         <title>Upload</title>
-        <meta
-          name="description"
-          content="Upload your project files"
-        />
+        <meta name="description" content="Upload your project files" />
       </Head>
       <section className="">
         <form onSubmit={handleSubmit} className={styles.formContainer}>
@@ -65,13 +78,15 @@ export default function UploadForm() {
               Project Files
             </label>
             <div className={styles.inputContainer}>
-            <input 
-                type="file" 
-                id="file" 
+              <input
+                type="file"
+                id="file"
                 multiple
                 required
-                onChange={(e) => {setFile(e.target.files[0])}}
-            />
+                onChange={(e) => {
+                  setFile(e.target.files[0]);
+                }}
+              />
             </div>
           </div>
 
