@@ -1,50 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Head from "next/head";
-import Link from "next/link";
-// import { ethers } from "ethers";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
-// import connectContract from "../utils/connectContract";
 import styles from "../styles/Form.module.css";
 
-export default function CreateEvent() {
-  const { data: account } = useAccount();
-
-  const [eventName, setEventName] = useState("");
+export default function UploadForm() {
+  const [projectName, setProjectName] = useState("");
   const [file, setFile] = useState(null);
-  const [eventTime, setEventTime] = useState("");
-  const [maxCapacity, setMaxCapacity] = useState("");
-  const [refund, setRefund] = useState("");
-  const [eventLink, setEventLink] = useState("");
-  const [eventDescription, setEventDescription] = useState("");
-
-  const [success, setSuccess] = useState(null);
-  const [message, setMessage] = useState(null);
-  const [loading, setLoading] = useState(null);
-  const [eventID, setEventID] = useState(null);
-
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     let formData = new FormData()
     formData.append('file', file)
-    formData.append('text', eventName)
+    formData.append('text', projectName)
 
     try {
       const response = await fetch("/api/upload", {
         method: "POST",
-        // headers: { "Content-Type": "multipart/form-data" },
         body: formData,
       });
       if (response.status !== 200) {
         console.log("ERROR", response)
       } else {
         console.log("Form successfully submitted!");
-        // let responseJSON = await response.json();
-        // console.log("CID:", responseJSON.cid);
+        let responseJSON = await response.json();
+        console.log("CID:", responseJSON.cid);
       }
-      // check response, if success is false, dont take them to success page
     } catch (error) {
       alert(
         `Oops! Something went wrong. Please refresh and try again. Error ${error}`
@@ -55,34 +35,34 @@ export default function CreateEvent() {
   return (
     <div className="">
       <Head>
-        <title>Create your event | web3rsvp</title>
+        <title>Upload</title>
         <meta
           name="description"
-          content="Create your virtual event on the blockchain"
+          content="Upload your project files"
         />
       </Head>
       <section className="">
         <form onSubmit={handleSubmit} className={styles.formContainer}>
           <div className={styles.inputGroup}>
-            <label htmlFor="eventname" className={styles.inputLabel}>
-              Event name
+            <label htmlFor="projectname" className={styles.inputLabel}>
+              Name
             </label>
             <div className={styles.inputContainer}>
               <input
-                id="event-name"
-                name="event-name"
+                id="project-name"
+                name="project-name"
                 type="text"
                 className={styles.formInput}
                 required
-                value={eventName}
-                onChange={(e) => setEventName(e.target.value)}
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
               />
             </div>
           </div>
 
           <div className={styles.inputGroup}>
             <label htmlFor="file" className={styles.inputLabel}>
-              Event name
+              Project Files
             </label>
             <div className={styles.inputContainer}>
             <input 
