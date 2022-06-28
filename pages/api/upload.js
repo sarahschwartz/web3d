@@ -11,11 +11,11 @@ handler.post(async (req, res) => {
   try {
     console.log("BODY", req.body)
     console.log("FILES", req.files)
-    // const files = await makeFileObjects(req.body, req.files);
-    // const cid = await storeFiles(files);
-    // console.log("stored files with cid:", cid);
+    const files = await makeFileObjects(req.body, req.files);
+    const cid = await storeFiles(files);
+    console.log("stored files with cid:", cid);
     return res.status(200)
-    // .json({ success: true, cid: cid });
+    .json({ success: true, cid: cid });
   } catch (err) {
     return res
       .status(500)
@@ -44,7 +44,7 @@ async function storeFiles(files) {
 
 async function makeFileObjects(text, myFiles) {
   const buffer = Buffer.from(JSON.stringify(text));
-  let filename = myFiles['file'][0].path
+  let filename = myFiles['files'][0].path
   const imageDirectory = resolve(process.cwd(), filename);
   const files = await getFilesFromPath(imageDirectory);
 

@@ -32,7 +32,6 @@ const getLit = async (filestoEncrypt) => {
     },
   ];
   
-
   const encrypted = await lit.encryptFiles(
     accessControlConditions, 
     filesArray
@@ -50,10 +49,10 @@ export default function UploadForm() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const {encryptedFilesZip, encryptedSymmetricKey} = await getLit(files)
+    const {encryptedFiles, encryptedSymmetricKey} = await getLit(files)
 
     let formData = new FormData();
-    formData.append("files", encryptedFilesZip)
+    formData.append("files", encryptedFiles)
     formData.append("key", encryptedSymmetricKey)
     formData.append("text", projectName);
     formData.append("description", projectDescription);
