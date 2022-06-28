@@ -1,21 +1,13 @@
 import { useState } from "react";
 import Head from "next/head";
 import styles from "../styles/Form.module.css";
-import Lit from "../utils/getLit"
+import Lit from "../utils/getLit";
 
-const getLit = async (filestoEncrypt) => {
-  // change files object into files array
-  let filesArray = []
-  for(let i = 0; i < filestoEncrypt.length; i++){
-    filesArray.push(filestoEncrypt[i])
-  }
+export default function UploadForm() {
+  const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [files, setFiles] = useState(null);
 
-  console.log("FILES ARRAY", filesArray)
-
-  const lit = new Lit()
-  await lit.connect()
-
-  // console.log("LIT:", lit)
   // this is where we set the conditions that allow users to access a file
   // this example checks if the user's wallet address is a specific address
   const accessControlConditions = [
@@ -31,49 +23,57 @@ const getLit = async (filestoEncrypt) => {
       },
     },
   ];
-  
-  const encrypted = await lit.encryptFiles(
-    accessControlConditions, 
-    filesArray
-    )
-
-  console.log("ENCRYPTED", encrypted)
-  return encrypted
-}
-
-
-export default function UploadForm() {
-  const [projectName, setProjectName] = useState("");
-  const [projectDescription, setProjectDescription] = useState("");
-  const [files, setFiles] = useState(null);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const {encryptedFiles, encryptedSymmetricKey} = await getLit(files)
-
-    let formData = new FormData();
-    formData.append("files", encryptedFiles)
-    formData.append("key", encryptedSymmetricKey)
-    formData.append("text", projectName);
-    formData.append("description", projectDescription);
-
-    try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      if (response.status !== 200) {
-        console.log("ERROR", response);
-      } else {
-        console.log("Form successfully submitted!");
-        let responseJSON = await response.json();
-        console.log("CID:", responseJSON.cid);
-      }
-    } catch (error) {
-      alert(
-        `Oops! Something went wrong. Please refresh and try again. Error ${error}`
-      );
+    let filestoEncrypt = files
+    // change files object into files array
+    let filesArray = [];
+    for (let i = 0; i < filestoEncrypt.length; i++) {
+      filesArray.push(filestoEncrypt[i]);
     }
+
+    console.log("FILES ARRAY", filesArray);
+
+    let lit = new Lit();
+    await lit.connect();
+
+    const { encryptedFiles, encryptedSymmetricKey } = await lit.encryptFiles(
+      accessControlConditions,
+      filesArray
+    );
+
+    console.log("ENCRYPTED FILES", encryptedFiles)
+
+    const { decryptedZip } = await lit.decryptFiles(
+      accessControlConditions,
+      encryptedFiles,
+      encryptedSymmetricKey
+    );
+    console.log("DECRYPTED ZIP", decryptedZip);
+    // let formData = new FormData();
+    // formData.append("files", encryptedFiles)
+    // formData.append("key", encryptedSymmetricKey)
+    // formData.append("text", projectName);
+    // formData.append("description", projectDescription);
+
+    // try {
+    //   const response = await fetch("/api/upload", {
+    //     method: "POST",
+    //     body: formData,
+    //   });
+    //   if (response.status !== 200) {
+    //     console.log("ERROR", response);
+    //   } else {
+    //     console.log("Form successfully submitted!");
+    //     let responseJSON = await response.json();
+    //     console.log("CID:", responseJSON.cid);
+    //   }
+    // } catch (error) {
+    //   alert(
+    //     `Oops! Something went wrong. Please refresh and try again. Error ${error}`
+    //   );
+    // }
   }
 
   return (

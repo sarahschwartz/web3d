@@ -47,7 +47,7 @@ class Lit {
    
   }
 
-  async decrypt(
+  async decryptFiles(
     accessControlConditions,
     encryptedZipFile,
     encryptedSymmetricKey
@@ -56,7 +56,7 @@ class Lit {
       await this.connect();
     }
 
-    const authSig = await LitJsSdk.checkAndSignAuthMessage();
+    const authSig = await LitJsSdk.checkAndSignAuthMessage({chain: 'ethereum'})
     const symmetricKey = await this.litNodeClient.getEncryptionKey({
       accessControlConditions,
       toDecrypt: encryptedSymmetricKey,
@@ -70,48 +70,6 @@ class Lit {
     );
 
     return { decryptedZip };
-  }
-
-  async encryptString(str) {
-    if (!this.litNodeClient) {
-      await this.connect()
-    }
-    const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain })
-    const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(str)
-
-    const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
-      accessControlConditions: accessControlConditionsNFT,
-      symmetricKey,
-      authSig,
-      chain,
-    })
-
-    return {
-      encryptedFile: encryptedString,
-      encryptedSymmetricKey: LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16")
-    }
-  }
-
-  async decryptString(encryptedStr, encryptedSymmetricKey) {
-    if (!this.litNodeClient) {
-      await this.connect()
-    }
-    const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain })
-    const symmetricKey = await this.litNodeClient.getEncryptionKey({
-      accessControlConditions: accessControlConditionsNFT,
-      toDecrypt: encryptedSymmetricKey,
-      chain,
-      authSig
-    })
-    const decryptedFile = await LitJsSdk.decryptString(
-      encryptedStr,
-      symmetricKey
-    );
-    // eslint-disable-next-line no-console
-    console.log({
-      decryptedFile
-    })
-    return { decryptedFile }
   }
 
 }
