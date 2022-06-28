@@ -1,18 +1,28 @@
 import { useState } from "react";
 import Head from "next/head";
 import styles from "../styles/Form.module.css";
+import Lit from "../utils/getLit"
 
-export default function UploadForm() {
-  const [projectName, setProjectName] = useState("");
-  const [file, setFile] = useState(null);
+const getLit = async (filestoEncrypt) => {
+  // change files object into files array
+  let filesArray = []
+  for(let i = 0; i < filestoEncrypt.length; i++){
+    filesArray.push(filestoEncrypt[i])
+  }
 
+  console.log("FILES ARRAY", filesArray)
+
+  const lit = new Lit()
+  await lit.connect()
+
+  // console.log("LIT:", lit)
   // this is where we set the conditions that allow users to access a file
   // this example checks if the user's wallet address is a specific address
   const accessControlConditions = [
     {
       contractAddress: "",
       standardContractType: "",
-      chain,
+      chain: "ethereum",
       method: "",
       parameters: [":userAddress"],
       returnValueTest: {
@@ -21,13 +31,32 @@ export default function UploadForm() {
       },
     },
   ];
+  
+
+  const encrypted = await lit.encryptFiles(
+    accessControlConditions, 
+    filesArray
+    )
+
+  console.log("ENCRYPTED", encrypted)
+  return encrypted
+}
+
+
+export default function UploadForm() {
+  const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [files, setFiles] = useState(null);
 
   async function handleSubmit(e) {
     e.preventDefault();
+    const {encryptedFilesZip, encryptedSymmetricKey} = await getLit(files)
 
     let formData = new FormData();
-    formData.append("file", file);
+    formData.append("files", encryptedFilesZip)
+    formData.append("key", encryptedSymmetricKey)
     formData.append("text", projectName);
+    formData.append("description", projectDescription);
 
     try {
       const response = await fetch("/api/upload", {
@@ -72,19 +101,36 @@ export default function UploadForm() {
               />
             </div>
           </div>
+          <div className={styles.inputGroup}>
+            <label htmlFor="projectname" className={styles.inputLabel}>
+              Description
+            </label>
+            <div className={styles.inputContainer}>
+              <input
+                id="project-description"
+                name="project-description"
+                type="text"
+                className={styles.formInput}
+                required
+                value={projectDescription}
+                onChange={(e) => setProjectDescription(e.target.value)}
+              />
+            </div>
+          </div>
 
           <div className={styles.inputGroup}>
-            <label htmlFor="file" className={styles.inputLabel}>
+            <label htmlFor="files" className={styles.inputLabel}>
               Project Files
             </label>
             <div className={styles.inputContainer}>
               <input
                 type="file"
-                id="file"
+                id="files"
                 multiple
                 required
+                accept=".gltf"
                 onChange={(e) => {
-                  setFile(e.target.files[0]);
+                  setFiles(e.target.files);
                 }}
               />
             </div>

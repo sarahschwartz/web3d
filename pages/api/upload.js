@@ -1,7 +1,7 @@
 import middleware from "../../middleware/middleware";
 import nextConnect from "next-connect";
 import { Web3Storage, File, getFilesFromPath } from "web3.storage";
-const { join, resolve } = require("path");
+const { resolve } = require("path");
 
 const handler = nextConnect();
 handler.use(middleware);
@@ -9,10 +9,13 @@ handler.use(middleware);
 handler.post(async (req, res) => {
 
   try {
-    const files = await makeFileObjects(req.body, req.files);
-    const cid = await storeFiles(files);
-    console.log("stored files with cid:", cid);
-    return res.status(200).json({ success: true, cid: cid });
+    console.log("BODY", req.body)
+    console.log("FILES", req.files)
+    // const files = await makeFileObjects(req.body, req.files);
+    // const cid = await storeFiles(files);
+    // console.log("stored files with cid:", cid);
+    return res.status(200)
+    // .json({ success: true, cid: cid });
   } catch (err) {
     return res
       .status(500)
