@@ -21,7 +21,7 @@ export default function UploadForm() {
       parameters: [":userAddress"],
       returnValueTest: {
         comparator: "=",
-        value: "0x0cF03B780747F70AA8ac080F9B67C61B18Fe4405",
+        value: "0xFAc3414518A0A0A5c955151b077c9222a41786Ff",
       },
     },
   ];
