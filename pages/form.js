@@ -7,6 +7,8 @@ export default function UploadForm() {
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [files, setFiles] = useState(null);
+  const [returnedFiles, setReturnedFiles] = useState(null)
+  const [downloadFileName, setDownloadFileName] = useState("")
 
   // this is where we set the conditions that allow users to access a file
   // this example checks if the user's wallet address is a specific address
@@ -19,7 +21,7 @@ export default function UploadForm() {
       parameters: [":userAddress"],
       returnValueTest: {
         comparator: "=",
-        value: "0xFAc3414518A0A0A5c955151b077c9222a41786Ff",
+        value: "0x0cF03B780747F70AA8ac080F9B67C61B18Fe4405",
       },
     },
   ];
@@ -50,7 +52,27 @@ export default function UploadForm() {
       encryptedFiles,
       encryptedSymmetricKey
     );
-    console.log("DECRYPTED ZIP", decryptedZip);
+
+    let filePath;
+
+    for (let item of Object.values(decryptedZip)) {
+      if (item.dir === false) {
+        filePath = item.name;
+        break;
+      }
+    }
+
+    if (!filePath) {
+      console.log("FILE NOT FOUND!")
+      return;
+    }
+
+    const gltfBlob = await decryptedZip[filePath].async("blob");
+    
+    setReturnedFiles(URL.createObjectURL(gltfBlob));
+
+    setDownloadFileName(filePath.substring(filePath.lastIndexOf('/') + 1));
+    
     // let formData = new FormData();
     // formData.append("files", encryptedFiles)
     // formData.append("key", encryptedSymmetricKey)
@@ -142,6 +164,14 @@ export default function UploadForm() {
               </button>
             </div>
           </div>
+          
+          {returnedFiles && downloadFileName && (
+            <div>
+              <a href={returnedFiles} download={downloadFileName}>
+                Download Files
+              </a>
+            </div>
+          )}
         </form>
       </section>
     </div>
