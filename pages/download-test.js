@@ -23,7 +23,7 @@ const cid = "bafybeidb3dbhebqfltauasfp2xvaxa5tz6bg2i3xv6h5rb3yabqcmi3yhe";
 
 export default function Download() {
   const [encrypted, setEncrypted] = useState(false);
-  const [downloadLinks, setDownloadLinks] = useState([]);
+  const [rawFiles, setRawFiles] = useState(null);
   const [encryptedFiles, setEncryptedFiles] = useState(null);
   const [returnedFiles, setReturnedFiles] = useState(null);
   const [downloadFileName, setDownloadFileName] = useState("");
@@ -31,7 +31,6 @@ export default function Download() {
   async function getLinks(ipfsPath) {
     const url = "https://dweb.link/api/v0";
     const ipfs = create({ url });
-
     const links = [];
     for await (const link of ipfs.ls(ipfsPath)) {
       links.push(link);
@@ -42,16 +41,31 @@ export default function Download() {
   const prepareDownload = async () => {
     if (!encrypted) {
       const links = await getLinks(cid);
-      for(let i = 0; i < links.length; i++){
-        if(links[i].name !== "data.json"){
-          fetch(`https://ipfs.io/ipfs/${links[i].path}`)
-          .then(res => res.blob())
-          .then((res) => {
-            console.log("RESPONSE BLOB", res)
-          })
+      let raw = [];
+      for await (const link of links) {
+        if(link.name !== "data.json"){
+          let res = await fetch(`https://ipfs.io/ipfs/${link.path}`)
+          let blob = await res.blob()
+          const file = {
+                path: URL.createObjectURL(blob),
+                name: link.name
+              }
+          raw.push(file);
         }
       }
-      setDownloadLinks(links);
+      setRawFiles(raw)
+      // for await (let i = 0; i < links.length; i++){
+      //   if(links[i].name !== "data.json"){
+      //     let res = await fetch(`https://ipfs.io/ipfs/${links[i].path}`)
+      //     let blob = await res.blob()
+      //     const file = {
+      //           path: URL.createObjectURL(res),
+      //           name: links[i].name
+      //         }
+      //     raw.push(file);
+      //   }
+      // }
+      // setRawFiles(raw)
     } else {
       let lit = new Lit();
       await lit.connect();
@@ -102,16 +116,16 @@ export default function Download() {
 
       <button
         onClick={() => {
-          console.log(downloadLinks);
+          console.log("RAW", rawFiles);
         }}
       >
         links
       </button>
 
-      {!encrypted && downloadLinks.length > 0 && (
+      {rawFiles && (
         <div>
-          {downloadLinks.map((file) => (
-            <a href={file.path} download={file.name} key={file.name} style={{marginBottom: "20px", display: "block"}}>
+          {rawFiles.map((file) => (
+            <a href={file.path} download={file.name} key={file.path} style={{marginBottom: "20px", display: "block"}}>
               Download {file.name}
             </a>
           ))}
