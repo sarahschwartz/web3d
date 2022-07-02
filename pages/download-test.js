@@ -16,9 +16,6 @@ const accessControlConditions = [
   },
 ];
 
-// const encryptedSymmetricKey =
-// "4cef000f751164065ac465d866d3104b56fbc6dc9e0028aa46e41a479fe2617712bdd876f8fd9e2a0d3688a136c21a18007d1b199074386ad1c4499360867679784d516bc96816cc38ca5e6e2f1d866c91a06671f88592e6a36638be2d467e99cf5ac5f3cabf3df5eae94937e4ece40708f08205036ad5245d99b41a7920ba65000000000000002007f24c2c9448f18a3bbae832af0c8fddf073a0ee4c62ca7806c385ab220d0dcc052b0d1e3adae0fdcbc9f314049e7593";
-// const cid = "bafybeicabimw2hofnfio5oaxxmoddyeol5nvtnvq6mdcmpgsewjqcqsmb4";
 const cid = "bafybeidb3dbhebqfltauasfp2xvaxa5tz6bg2i3xv6h5rb3yabqcmi3yhe";
 
 export default function Download() {
@@ -54,18 +51,6 @@ export default function Download() {
         }
       }
       setRawFiles(raw)
-      // for await (let i = 0; i < links.length; i++){
-      //   if(links[i].name !== "data.json"){
-      //     let res = await fetch(`https://ipfs.io/ipfs/${links[i].path}`)
-      //     let blob = await res.blob()
-      //     const file = {
-      //           path: URL.createObjectURL(res),
-      //           name: links[i].name
-      //         }
-      //     raw.push(file);
-      //   }
-      // }
-      // setRawFiles(raw)
     } else {
       let lit = new Lit();
       await lit.connect();
