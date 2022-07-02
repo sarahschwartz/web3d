@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { create } from "ipfs-http-client";
 import Lit from "../utils/getLit";
 
@@ -25,6 +25,24 @@ export default function Download() {
   const [encryptedFiles, setEncryptedFiles] = useState(null);
   const [returnedFiles, setReturnedFiles] = useState(null);
   const [downloadFileName, setDownloadFileName] = useState("");
+  const [links, setLinks] = useState(null)
+  const [projectInfo, setProjectInfo] = useState(null)
+
+  useEffect(() => {
+    async function runGetLinks() {
+      const myLinks = await getLinks(cid)
+      setLinks(myLinks)
+    }
+
+    async function getProjectInfo() {
+      const res = await fetch(`https://ipfs.io/ipfs/${cid}/data.json`)
+      const json = await res.json()
+      setProjectInfo(json)
+    }
+
+    runGetLinks();
+    getProjectInfo();
+  }, [])
 
   async function getLinks(ipfsPath) {
     const url = "https://dweb.link/api/v0";
@@ -39,7 +57,6 @@ export default function Download() {
   const prepareDownload = async () => {
     setLoading(true)
     if (!encrypted) {
-      const links = await getLinks(cid);
       let raw = [];
       for await (const link of links) {
         if(link.name !== "data.json"){
@@ -91,6 +108,10 @@ export default function Download() {
   return (
     <div>
       <h1>Download Files</h1>
+
+      {projectInfo?.text && (<div>Project Name: {projectInfo.text[0]}</div>)}
+      {projectInfo?.description && (<div>Description: {projectInfo.description[0]}</div>)}
+
       {!returnedFiles && !downloadFileName && !loading && (
         <button onClick={() => prepareDownload()}>Prepare Download</button>
       )}
@@ -102,14 +123,6 @@ export default function Download() {
           </a>
         </div>
       )}
-
-      <button
-        onClick={() => {
-          console.log("RAW", rawFiles);
-        }}
-      >
-        links
-      </button>
 
       {loading && <div> Loading.... </div>}
 
