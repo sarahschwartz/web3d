@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { create } from "ipfs-http-client";
 import Lit from "../utils/getLit";
 
@@ -19,6 +19,7 @@ const accessControlConditions = [
 const cid = "bafybeidb3dbhebqfltauasfp2xvaxa5tz6bg2i3xv6h5rb3yabqcmi3yhe";
 
 export default function Download() {
+  const [loading, setLoading] = useState(false)
   const [encrypted, setEncrypted] = useState(false);
   const [rawFiles, setRawFiles] = useState(null);
   const [encryptedFiles, setEncryptedFiles] = useState(null);
@@ -36,6 +37,7 @@ export default function Download() {
   }
 
   const prepareDownload = async () => {
+    setLoading(true)
     if (!encrypted) {
       const links = await getLinks(cid);
       let raw = [];
@@ -51,6 +53,7 @@ export default function Download() {
         }
       }
       setRawFiles(raw)
+      setLoading(false)
     } else {
       let lit = new Lit();
       await lit.connect();
@@ -81,17 +84,18 @@ export default function Download() {
       setReturnedFiles(URL.createObjectURL(gltfBlob));
 
       setDownloadFileName(filePath.substring(filePath.lastIndexOf("/") + 1));
+      setLoading(false)
     }
   };
 
   return (
     <div>
       <h1>Download Files</h1>
-      {!returnedFiles && !downloadFileName && (
+      {!returnedFiles && !downloadFileName && !loading && (
         <button onClick={() => prepareDownload()}>Prepare Download</button>
       )}
 
-      {returnedFiles && downloadFileName && (
+      {returnedFiles && downloadFileName && !loading && (
         <div>
           <a href={returnedFiles} download={downloadFileName}>
             Download Encrypted Files
@@ -107,7 +111,9 @@ export default function Download() {
         links
       </button>
 
-      {rawFiles && (
+      {loading && <div> Loading.... </div>}
+
+      {rawFiles && !loading && (
         <div>
           {rawFiles.map((file) => (
             <a href={file.path} download={file.name} key={file.path} style={{marginBottom: "20px", display: "block"}}>
