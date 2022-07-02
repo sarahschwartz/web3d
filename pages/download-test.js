@@ -15,12 +15,14 @@ const accessControlConditions = [
     },
   },
 ];
-
-const cid = "bafybeidb3dbhebqfltauasfp2xvaxa5tz6bg2i3xv6h5rb3yabqcmi3yhe";
+// unencrypted
+// const cid = "bafybeidb3dbhebqfltauasfp2xvaxa5tz6bg2i3xv6h5rb3yabqcmi3yhe";
+// encrypted
+const cid = "bafybeienxmzvpnzvx2676kikekb2vfbssj2euqbms63fl4dp2jqlu4u6oa"
 
 export default function Download() {
   const [loading, setLoading] = useState(false)
-  const [encrypted, setEncrypted] = useState(false);
+  const [encrypted, setEncrypted] = useState(true);
   const [rawFiles, setRawFiles] = useState(null);
   const [encryptedFiles, setEncryptedFiles] = useState(null);
   const [returnedFiles, setReturnedFiles] = useState(null);
@@ -75,10 +77,12 @@ export default function Download() {
       let lit = new Lit();
       await lit.connect();
       console.log("CONNECTED");
+      const res =  await fetch('https://ipfs.io/ipfs/bafybeienxmzvpnzvx2676kikekb2vfbssj2euqbms63fl4dp2jqlu4u6oa/aENQvwJwnRg4NFG0Yv0PvAH4.zip')
+      let blob = await res.blob()
       const { decryptedZip } = await lit.decryptFiles(
         accessControlConditions,
-        encryptedFiles,
-        encryptedSymmetricKey
+        blob,
+        "0fb19fab5b1669ece749596747e8c9611b77275dfb5503c7ca4c4f3e511b526fab3d5682fa791b9b78957c0bac522f0a8afde462fba60831aceb4edfc61b83bac164544e51f8be2061094feaa6db465b8c4cdb1f901418b3098361da3adc29b5b8c0aacd2462cc9e569c3c399221e4fb22175b6aa9a0841e98572fc73554528c0000000000000020c6e3764d11ba5635e5260a852777f75b18ce6963c28ef1174b10b0384c661cfa3d5ea6b3ab89bcdd2abd3a0b3c98158c"
       );
       console.log("DECRYPTED ZIP", decryptedZip);
 

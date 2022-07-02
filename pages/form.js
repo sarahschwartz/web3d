@@ -49,7 +49,7 @@ export default function UploadForm() {
     filesArray.forEach((file, index) => {
       formData.append(`file${index}`, file)
     })
-    formData.append("text", projectName);
+    formData.append("name", projectName);
     formData.append("description", projectDescription);
     await uploadToIPFS(formData)
   }
@@ -63,11 +63,12 @@ export default function UploadForm() {
       filesArray
     );
     console.log("ENCRYPTED FILES", encryptedFiles)
-    
+
     let formData = new FormData();
-    formData.append("files", encryptedFiles)
+    let zip = new File([encryptedFiles], "project.zip")
+    formData.append("file", zip)
     formData.append("key", encryptedSymmetricKey)
-    formData.append("text", projectName);
+    formData.append("name", projectName);
     formData.append("description", projectDescription);
     await uploadToIPFS(formData)
   }
