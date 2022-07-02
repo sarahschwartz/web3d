@@ -55,14 +55,17 @@ class Lit {
     if (!this.litNodeClient) {
       await this.connect();
     }
+    console.log("ALREADY CONNECTED")
 
     const authSig = await LitJsSdk.checkAndSignAuthMessage({chain: 'ethereum'})
+    console.log("auth sig")
     const symmetricKey = await this.litNodeClient.getEncryptionKey({
       accessControlConditions,
       toDecrypt: encryptedSymmetricKey,
       chain,
       authSig,
     });
+    console.log("symmetric key", symmetricKey)
 
     const decryptedZip = await LitJsSdk.decryptZip(
       encryptedZipFile,

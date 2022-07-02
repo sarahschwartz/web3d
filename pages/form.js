@@ -7,8 +7,7 @@ export default function UploadForm() {
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [files, setFiles] = useState(null);
-  const [returnedFiles, setReturnedFiles] = useState(null)
-  const [downloadFileName, setDownloadFileName] = useState("")
+  const [encrypt, setEncrypt] = useState(false)
 
   // this is where we set the conditions that allow users to access a file
   // this example checks if the user's wallet address is a specific address
@@ -26,10 +25,11 @@ export default function UploadForm() {
     },
   ];
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e){
     e.preventDefault();
-    let filestoEncrypt = files
+
     // change files object into files array
+    let filestoEncrypt = files
     let filesArray = [];
     for (let i = 0; i < filestoEncrypt.length; i++) {
       filesArray.push(filestoEncrypt[i]);
@@ -37,6 +37,24 @@ export default function UploadForm() {
 
     console.log("FILES ARRAY", filesArray);
 
+    if(encrypt){
+      await uploadAndEncrypt(filesArray)
+    } else {
+      await uploadRaw(filesArray)
+    }
+  }
+
+  async function uploadRaw(filesArray) {
+    let formData = new FormData();
+    filesArray.forEach((file, index) => {
+      formData.append(`file${index}`, file)
+    })
+    formData.append("text", projectName);
+    formData.append("description", projectDescription);
+    await uploadToIPFS(formData)
+  }
+
+  async function uploadAndEncrypt(filesArray) {
     let lit = new Lit();
     await lit.connect();
 
@@ -44,58 +62,34 @@ export default function UploadForm() {
       accessControlConditions,
       filesArray
     );
-
     console.log("ENCRYPTED FILES", encryptedFiles)
+    
+    let formData = new FormData();
+    formData.append("files", encryptedFiles)
+    formData.append("key", encryptedSymmetricKey)
+    formData.append("text", projectName);
+    formData.append("description", projectDescription);
+    await uploadToIPFS(formData)
+  }
 
-    const { decryptedZip } = await lit.decryptFiles(
-      accessControlConditions,
-      encryptedFiles,
-      encryptedSymmetricKey
-    );
-
-    let filePath;
-
-    for (let item of Object.values(decryptedZip)) {
-      if (item.dir === false) {
-        filePath = item.name;
-        break;
+  async function uploadToIPFS(formData){
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (response.status !== 200) {
+        console.log("ERROR", response);
+      } else {
+        console.log("Form successfully submitted!");
+        let responseJSON = await response.json();
+        console.log("CID:", responseJSON.cid);
       }
+    } catch (error) {
+      alert(
+        `Oops! Something went wrong. Please refresh and try again. Error ${error}`
+      );
     }
-
-    if (!filePath) {
-      console.log("FILE NOT FOUND!")
-      return;
-    }
-
-    const gltfBlob = await decryptedZip[filePath].async("blob");
-    
-    setReturnedFiles(URL.createObjectURL(gltfBlob));
-
-    setDownloadFileName(filePath.substring(filePath.lastIndexOf('/') + 1));
-    
-    // let formData = new FormData();
-    // formData.append("files", encryptedFiles)
-    // formData.append("key", encryptedSymmetricKey)
-    // formData.append("text", projectName);
-    // formData.append("description", projectDescription);
-
-    // try {
-    //   const response = await fetch("/api/upload", {
-    //     method: "POST",
-    //     body: formData,
-    //   });
-    //   if (response.status !== 200) {
-    //     console.log("ERROR", response);
-    //   } else {
-    //     console.log("Form successfully submitted!");
-    //     let responseJSON = await response.json();
-    //     console.log("CID:", responseJSON.cid);
-    //   }
-    // } catch (error) {
-    //   alert(
-    //     `Oops! Something went wrong. Please refresh and try again. Error ${error}`
-    //   );
-    // }
   }
 
   return (
@@ -157,21 +151,24 @@ export default function UploadForm() {
             </div>
           </div>
 
-          <div className="">
             <div className="">
-              <button type="submit" className="">
-                Create
+              <button type="button" className="" onClick={() => {setEncrypt(!encrypt)}}>
+                Encrypt Files
               </button>
             </div>
-          </div>
-          
-          {returnedFiles && downloadFileName && (
+
             <div>
-              <a href={returnedFiles} download={downloadFileName}>
-                Download Files
-              </a>
+              {encrypt.toString()}
             </div>
-          )}
+
+
+            <div className="">
+              <button type="submit" className="">
+                Upload Files
+              </button>
+            </div>
+          
+          
         </form>
       </section>
     </div>

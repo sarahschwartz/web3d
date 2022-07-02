@@ -1,6 +1,7 @@
 import middleware from "../../middleware/middleware";
 import nextConnect from "next-connect";
 import { Web3Storage, File, getFilesFromPath } from "web3.storage";
+const fs = require('fs');
 const { resolve } = require("path");
 
 const handler = nextConnect();
@@ -43,12 +44,21 @@ async function storeFiles(files) {
 }
 
 async function makeFileObjects(text, myFiles) {
+  let files;
   const buffer = Buffer.from(JSON.stringify(text));
-  let filename = myFiles['files'][0].path
-  const imageDirectory = resolve(process.cwd(), filename);
-  const files = await getFilesFromPath(imageDirectory);
+  for (let item of Object.values(myFiles)) {
+    const filepath = resolve(process.cwd(), item[0].path);
+    if(!files){
+      files = await getFilesFromPath(filepath);
+    } else {
+      let newFiles = await getFilesFromPath(filepath);
+      files = [...files, ...newFiles]
+    }
+  }
 
-  files.push(new File([buffer], "data.json"));
+  files.push(new File([buffer], "data.json"))
+  console.log("FINAL FILES ARRAY", files)
+
   return files;
 }
 
