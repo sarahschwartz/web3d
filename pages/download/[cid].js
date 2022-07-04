@@ -116,7 +116,7 @@ export default function Download() {
 
   return (
     <div>
-      <h1>Download Files</h1>
+      <h1>Download {projectInfo?.key ? "Encrypted" : "Public"} Files</h1>
 
       {projectInfo?.name && <div>Project Name: {projectInfo.name[0]}</div>}
       {projectInfo?.description && (
