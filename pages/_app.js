@@ -11,12 +11,12 @@ import "../styles/globals.css";
 // const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
 
 // const { chains, provider } = configureChains(
-//   [chain.polygon],
+//   [chain.polygonMumbai, chain.mainnet],
 //   [infuraProvider({ infuraId }), publicProvider()]
 // );
 
 // const { connectors } = getDefaultWallets({
-//   appName: "web3rsvp",
+//   appName: "web3d",
 //   chains,
 // });
 
@@ -30,12 +30,12 @@ export default function MyApp({ Component, pageProps }) {
   return (
     // <WagmiConfig client={wagmiClient}>
     //   <RainbowKitProvider chains={chains}>
-        // {/* <ApolloProvider client={client}> */}
-         //<Layout>
+        // {/* // <ApolloProvider client={client}> */}
+        //  {/* //<Layout> */}
             <Component {...pageProps} />
-        //</Layout>
-        // {/* </ApolloProvider> */}
-    //   </RainbowKitProvider>
-    // </WagmiConfig>
+        // {/* //</Layout>
+        // </ApolloProvider> */}
+    //    </RainbowKitProvider>
+    //  </WagmiConfig>
   );
 }

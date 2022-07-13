@@ -43,6 +43,7 @@ async function storeFiles(files) {
 
 async function getNewPath(myFiles){
   for (let item of Object.values(myFiles)) {
+    console.log("ITEM")
     if (item[0].originalFilename && item[0].originalFilename !== "") {
       const filePath = resolve(process.cwd(), item[0].path);
       const newPath = join(dirname(filePath), item[0].originalFilename);
