@@ -41,21 +41,26 @@ async function storeFiles(files) {
   }
 }
 
-async function makeFileObjects(text, myFiles) {
-  let files;
-  const buffer = Buffer.from(JSON.stringify(text));
+async function getNewPath(myFiles){
   for (let item of Object.values(myFiles)) {
     if (item[0].originalFilename && item[0].originalFilename !== "") {
       const filePath = resolve(process.cwd(), item[0].path);
       const newPath = join(dirname(filePath), item[0].originalFilename);
       await fs.promises.rename(filePath, newPath);
+      return newPath
     }
-    if (!files) {
-      files = await getFilesFromPath(newPath);
-    } else {
-      let newFiles = await getFilesFromPath(newPath);
-      files = [...files, ...newFiles];
-    }
+}
+}
+
+async function makeFileObjects(text, myFiles) {
+  let files;
+  const buffer = Buffer.from(JSON.stringify(text));
+  const newPath = await getNewPath(myFiles);
+  if (!files) {
+    files = await getFilesFromPath(newPath);
+  } else {
+    let newFiles = await getFilesFromPath(newPath);
+    files = [...files, ...newFiles];
   }
 
   files.push(new File([buffer], "data.json"));
