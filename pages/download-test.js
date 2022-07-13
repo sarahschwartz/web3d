@@ -4,9 +4,9 @@ import Lit from "../utils/getLit";
 
 const accessControlConditions = [
   {
-    contractAddress: "",
+    contractAddress: "0x62d950226A91d223fB88b8648AD1FDe5831aC09A",
     standardContractType: "",
-    chain: "ethereum",
+    chain: "mumbai",
     method: "",
     parameters: [":userAddress"],
     returnValueTest: {

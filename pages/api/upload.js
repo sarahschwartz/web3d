@@ -42,17 +42,22 @@ async function storeFiles(files) {
 }
 
 async function makeFileObjects(text, myFiles) {
+  console.log("MAKIG FILE OBJECTS")
   let files;
   const buffer = Buffer.from(JSON.stringify(text));
   for (let item of Object.values(myFiles)) {
+    console.log("ITEM")
     if (item[0].originalFilename && item[0].originalFilename !== "") {
       const filePath = resolve(process.cwd(), item[0].path);
       const newPath = join(dirname(filePath), item[0].originalFilename);
       await fs.promises.rename(filePath, newPath);
     }
     if (!files) {
+      console.log("Here")
       files = await getFilesFromPath(newPath);
+      console.log("done")
     } else {
+      console.log("Now Here")
       let newFiles = await getFilesFromPath(newPath);
       files = [...files, ...newFiles];
     }
