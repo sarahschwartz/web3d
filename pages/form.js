@@ -123,7 +123,7 @@ function getAccessControlConditions(){
         if(encrypt){
           cost = ethers.utils.parseEther(projectCost);
         } else{
-          cost = ethers.utils.parseEther(0);
+          cost = ethers.utils.parseEther('0');
         }
 
         const txn = await marketplaceContract.mintProject(tokenID, cid, cost, {
@@ -259,7 +259,7 @@ function getAccessControlConditions(){
 
             <div className="">
               <button type="submit" className="">
-                Upload Files
+                Upload Files (if you are encrypting, make sure you are switched to ETH mainnet)
               </button>
             </div>
           </form>
@@ -267,10 +267,8 @@ function getAccessControlConditions(){
 
         {submitted && 
         <button type="button" className="" onClick={mintProject}>
-          Mint Project
+          Mint Project (make sure you switched to polygon mumbai)
         </button>}
-
-        <button onClick={(() => {console.log(tokenID)})}>k</button>
 
       </section>
     </div>
